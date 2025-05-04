@@ -1,0 +1,16 @@
+!!python/object:argparse.Namespace
+config: ../configs/dsprites_gfn_dynamics_em_double_sd.yaml
+device: -1
+dynamics: true
+epochs: 1
+fixed_b: ./rundata_dsprites/dsprites_500_ref_backwardmlp.pt
+fixed_f: ./rundata_dsprites/dsprites_500_ref_forwardmlp.pt
+gif_path: pca_animation.gif
+load: null
+n_items: 20
+run_name: dspritesmlp_400_double
+save_dynamics_mlp: false
+seed: 0
+skip_vae: false
+test: true
+wandb: false

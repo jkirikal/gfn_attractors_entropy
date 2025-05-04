@@ -1,0 +1,13 @@
+!!python/object:argparse.Namespace
+config: ..\configs\dsprites_gfn_dynamics_em.yaml
+device: -1
+dynamics: true
+epochs: 100
+gif_path: pca_animation.gif
+load: ..\..\hpc\models\dsprites_200_20250401_211437.pt
+n_items: 20
+run_name: null
+seed: 4
+skip_vae: false
+test: true
+wandb: false
