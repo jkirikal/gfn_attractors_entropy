@@ -12,7 +12,7 @@ The rest of the modules and requirements can be found in ``` requirements.txt ``
 ## Running the code, examples
 Here I will provide some examples of the commands used for training the models. The exact training jobs that I used for training my models can be found under **/example_hpc_jobs/**.<br>
 ### The main code
-The code for running training on the HBV and dSprites tasks are **/src/diffusion_gfn.py** and **/src/dsprites_gfn.py**, respectively.
+The code for training models on the HBV and dSprites tasks are **/src/diffusion_gfn.py** and **/src/dsprites_gfn.py**, respectively.
 ### Training the models
 An example of training a dSprites model with a double fixed_sd variant. This model is trained for 400 epochs. <br>
 ```python dsprites_gfn.py --config ../configs/dsprites_fixed_double.yaml --device 0 --dynamics true --epochs 400 --run_name dsprites_400_double```. <br> <br>
