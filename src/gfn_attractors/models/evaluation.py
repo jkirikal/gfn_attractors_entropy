@@ -3,6 +3,7 @@ import numpy as np
 import torch
 import pandas as pd
 from plotnine import *
+import math
 
 
 class EvaluationAttractorsModel(ABC):
@@ -43,7 +44,7 @@ class EvaluationAttractorsModel(ABC):
     def to(self, device):
         self.model = self.model.to(device) 
 
-    def calculate_speed_and_distance(self, n=10000, single_point_n=100, single_point_batch_size=100, deterministic=False):
+    def calculate_metrics(self, n=10000, single_point_n=100, single_point_batch_size=100, deterministic=False):
         batch_valid = self.sample_validation_batch(n)
         
         x = batch_valid['x']
@@ -57,8 +58,13 @@ class EvaluationAttractorsModel(ABC):
         total_distance = distances.sum(dim=1)
         generated_point_distance = (z_traj[:,0] - z_hat).norm(dim=1)
         
-        print("Relative 'speed': ",(total_distance/generated_point_distance).mean(0).item())
-        print("Total trajectory distance: ", total_distance.mean(0).item())
+        
+        mean_speed, lo_speed, hi_speed = self.ci95((total_distance/generated_point_distance))
+        # compute for total distance
+        mean_dist, lo_dist, hi_dist   = self.ci95(total_distance)
+
+        print(f"Relative speed:   {mean_speed:.3f}  95% CI = [{lo_speed:.3f}, {hi_speed:.3f}]")
+        print(f"Total distance:   {mean_dist:.3f}  95% CI = [{lo_dist:.3f}, {hi_dist:.3f}]")
         
         sampled_uniques = []
         for _ in range(single_point_n):
@@ -72,9 +78,29 @@ class EvaluationAttractorsModel(ABC):
                 single_w, _, _, _ = self.model.sample_w(single_z_traj, single_z0)
             
             sampled_uniques.append(len(set(self.model.m_model.stringify(single_w[:,-1]))))
+            
         
-        print(f"Mean number of unique sequences from same point per {single_point_n} samples: ", (sum(sampled_uniques) / len(sampled_uniques)))
+        mean_unique, lo_unique, hi_unique   = self.ci95(torch.tensor(sampled_uniques, dtype=torch.float32))
+        
+        print(f"Mean number of unique sequences:   {mean_unique:.3f}  95% CI = [{lo_unique:.3f}, {hi_unique:.3f}]")
+        
+        return (total_distance/generated_point_distance).mean(), total_distance.mean(), torch.tensor(sampled_uniques, dtype=torch.float32).mean()
 
+    def ci95(self, tensor):
+        """
+        Returns (mean, lower, upper) of a 95% confidence interval on tensor.
+        If use_t=True, uses Student's-t (df=n-1); otherwise normal z=1.96.
+        """
+        n    = tensor.numel()
+        mean = tensor.mean()
+        std  = tensor.std(unbiased=True)
+        se   = std / math.sqrt(n)
+
+        zcrit  = 1.96
+        margin = zcrit * se
+
+        return mean, mean - margin, mean + margin
+    
     def plot_distances(self, n=30, deterministic=False):
         batch_train = self.sample_training_batch(n)
         batch_valid = self.sample_validation_batch(n)

@@ -1,23 +1,17 @@
 import torch
 import numpy as np
 import argparse
-
-import sys
-sys.path.append("C:\\Users\\johankir\\OneDrive - Tartu Ülikool\\Dokumendid\\semester_6\\lõputöö\\gfn_attractors\\src")
-
-import numpy as np
-import torch
 import yaml
 
-from gfn_attractors.data.branching_diffusion import *
-from gfn_attractors.misc import torch_utils as tu
-from gfn_attractors.models.gfn_em import GFNEM, GFNEMConfig
-from gfn_attractors.models.evaluation import EvaluationAttractorsModel
-from gfn_attractors.models.attractors_gfn_em import AttractorsGFNEM, AttractorsGFNEMConfig
-from gfn_attractors.binary_vectors import *
-from gfn_attractors.data.dsprites import *
-from gfn_attractors.images import *
-from gfn_attractors.dsprites import DSpritesAttractorsGFNEM, DSpritesGFNEM
+from src.gfn_attractors.data.branching_diffusion import *
+from src.gfn_attractors.misc import torch_utils as tu
+from src.gfn_attractors.models.gfn_em import GFNEM, GFNEMConfig
+from src.gfn_attractors.models.evaluation import EvaluationAttractorsModel
+from src.gfn_attractors.models.attractors_gfn_em import AttractorsGFNEM, AttractorsGFNEMConfig
+from src.gfn_attractors.binary_vectors import *
+from src.gfn_attractors.data.dsprites import *
+from src.gfn_attractors.images import *
+from src.gfn_attractors.dsprites import DSpritesAttractorsGFNEM, DSpritesGFNEM
 
 def main(args):
     torch.manual_seed(args.seed)
@@ -89,10 +83,10 @@ def main(args):
         
     if args.load:
         print(f"Loading model from {args.load}.")
-        print(tu.load_partial_state_dict(model, torch.load(args.load)))
+        tu.load_partial_state_dict(model, torch.load(args.load))
     else:
         print("You should choose a model")
-        return
+        #return
     
     if args.fixed_f and args.fixed_b:
         print(f"Loading forward fixed MLP models from {args.fixed_f} and {args.fixed_b}.")
@@ -106,8 +100,8 @@ def main(args):
     if args.plot_distance:
         evaluation.plot_distances()[0].save(f'plots/{args.content_name}_distances.png', width=8, height=6, dpi=300)
         
-    if args.calculate_spd_dist:
-        evaluation.calculate_speed_and_distance()
+    if args.calculate_met:
+        return evaluation.calculate_metrics()
     
     if args.plot_img:
         if args.gif:
@@ -121,8 +115,7 @@ def main(args):
             model.create_plots(gif_path=f'plots/samepoint_{args.content_name}.png', n_items=args.n_items, same_point=True, gif=False)
         
     #model.sanity_test()
-    
-    
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", type=str, help="Filepath to config file")
@@ -136,7 +129,7 @@ if __name__ == "__main__":
     parser.add_argument("--n_items", type=int, default=20, help="How many data entries to plot")
     
     parser.add_argument("--plot_distance", type=lambda x: x.lower() in ('true', '1'), default=False, help="Whether to plot distances")
-    parser.add_argument("--calculate_spd_dist", type=lambda x: x.lower() in ('true', '1'), default=False, help="Whether to calculate speed and total distance")
+    parser.add_argument("--calculate_met", type=lambda x: x.lower() in ('true', '1'), default=False, help="Whether to calculate speed and total distance")
     parser.add_argument("--plot_img", type=lambda x: x.lower() in ('true', '1'), default=False, help="Whether to create img")
     parser.add_argument("--same_point", type=lambda x: x.lower() in ('true', '1'), default=False, help="Whether to create img from single point")
     parser.add_argument("--gif", type=lambda x: x.lower() in ('true', '1'), default=False, help="Instead of images, create gifs")
