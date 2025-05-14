@@ -1,6 +1,6 @@
 # Code for my Bachelor's thesis: "Modeling Creativity using Artificial Neural Networks"
 This code is the modification of the work of Nam and colleagues (Nam et al., 2023). Their code can be found at: https://github.com/andrewnam/gfn_attractors <br>
-The thesis can be found in **Modelling_Creativity_Using_Artificial_Neural_Networks.pdf**
+The thesis can be found in **Modelling_Creativity_Using_Artificial_Neural_Networks.pdf**. <br>
 The aim of this thesis was to model creative behaviour in an artificial neural network through raising the level of entropy in that network.
 ## Resulting models and metrics
 The models trained during this project can be found on Google Drive: https://drive.google.com/drive/folders/14wSmfE2_qlnk91Q_Y1R-Pm0Plis-wrzI?usp=sharing <br>
